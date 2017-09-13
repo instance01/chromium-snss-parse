@@ -75,6 +75,13 @@ struct CommandSessionStorageAssociated : Command {
     virtual ~CommandSessionStorageAssociated() {}
 };
 
+struct CommandSetWindowWorkspace2 : Command {
+    uint32_t pickle_size;
+    int32_t window_id;
+    std::string workspace; // int + string
+    virtual ~CommandSetWindowWorkspace2() {}
+};
+
 
 // ---------------- //
 // - Tab commands - //
@@ -176,7 +183,7 @@ void probe_next_command(std::ifstream& f) {
 //  Read functions  //
 // ---------------- //
 
-// TODO Missing ids: 11,13,18,23
+// TODO Missing ids: 11,13,18
 std::shared_ptr<Command> read_next_session_command(std::ifstream& f) {
     std::shared_ptr<Command> ret;
     int prev = f.tellg();
@@ -269,6 +276,15 @@ std::shared_ptr<Command> read_next_session_command(std::ifstream& f) {
             ret2->id = read_arbitrary<int32_t>(f, 4);
             ret2->UNKNOWN_0 = read_arbitrary<int32_t>(f, 4); // TODO
             ret2->last_active_time = read_arbitrary<int64_t>(f, 8);
+            break;
+        }
+        case 23: // CommandSetWindowWorkspace2
+        {
+            ret = std::shared_ptr<CommandSetWindowWorkspace2>(new CommandSetWindowWorkspace2());
+            std::shared_ptr<CommandSetWindowWorkspace2> ret2 = std::static_pointer_cast<CommandSetWindowWorkspace2>(ret);
+            ret2->pickle_size = read_arbitrary<uint32_t>(f, 4);
+            ret2->window_id = read_arbitrary<int32_t>(f, 4);
+            read_string(f, ret2->workspace, false);
             break;
         }
         default:
