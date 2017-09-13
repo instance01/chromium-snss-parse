@@ -10,3 +10,4 @@ and other files.
 
 [Here](https://github.com/instance01/chromium-snss-parse/wiki/), and check out the examples folder.
 
+![Preview](https://0x1.pl/fs/data/output.gif)
