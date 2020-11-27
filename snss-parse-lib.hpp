@@ -165,12 +165,21 @@ std::wstring read_string16(std::ifstream& f, bool terminate) {
     std::cout << std::hex << f.tellg() << std::endl;
     std::cout << std::dec;
 #endif
-    char ret[len];
-    read_char(f, ret, len);
+    char tmp[len];
+    read_char(f, tmp, len);
     if (terminate) {
         read_arbitrary<uint16_t>(f, 1); // String is null terminated with 0x00
     }
-    return std::wstring (&ret[0], &ret[len]);
+
+    if (len % 2) { len--; }
+    std::wstring ret;
+    for (size_t i = 0; i < len;) {
+        // little-endian
+        int lo = tmp[i++] & 0xFF;
+        int hi = tmp[i++] & 0xFF;
+        ret.push_back(hi << 8 | lo);
+    }
+    return ret;
 }
 
 void probe_next_command(std::ifstream& f) {
