@@ -393,11 +393,11 @@ int get_file_size(std::ifstream& f) {
 bool open_and_check_file(std::ifstream& f, int *filesize) {
     *filesize = get_file_size(f);
 
-    char magic[4];
+    char magic[4] = "";
     read_char(f, magic, 4);
     read_arbitrary<uint32_t>(f, 4); // version
 
-    if (0 != std::strcmp("SNSS", magic)) {
+    if (0 != std::strncmp("SNSS", magic, 4)) {
         std::cerr << "Error: Not a valid SNSS file." << std::endl;
         return false;
     }
